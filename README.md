@@ -23,7 +23,7 @@ Create these files from the provided examples:
 - `backend/.env`
 - `frontend/.env`
 
-Example backend variables:
+Example backend variables for local PostgreSQL:
 
 - `PORT=5000`
 - `DB_USER=postgres`
@@ -32,9 +32,43 @@ Example backend variables:
 - `DB_PASSWORD=`
 - `DB_PORT=5432`
 
+Example backend variables for Render or Supabase:
+
+- `DATABASE_URL=postgresql://...`
+
 Example frontend variable:
 
 - `VITE_API_BASE_URL=http://localhost:5000`
+
+## Deployment Guide
+
+### Frontend on Vercel
+
+- Root directory: `frontend`
+- Framework preset: `Vite` / `React`
+- Build command: `npm run build`
+- Output directory: `dist`
+- Environment variables:
+	- `VITE_API_BASE_URL=https://your-render-backend.onrender.com`
+
+### Backend on Render
+
+- Root directory: `backend`
+- Runtime: `Node`
+- Build command: `npm install`
+- Start command: `npm start`
+- Environment variables:
+	- `DATABASE_URL=your-hosted-postgres-connection-string`
+	- `PORT` is provided by Render automatically
+
+### Database choice
+
+- You do **not** need Supabase specifically.
+- `pgAdmin` is only a client to manage PostgreSQL. It is not the database host.
+- For deployment, use any hosted PostgreSQL provider and paste its connection string into `DATABASE_URL`.
+- Good options are Render PostgreSQL, Supabase PostgreSQL, or another hosted Postgres provider.
+
+The backend now supports `DATABASE_URL`, so you do not need to change your code again if you choose a hosted database.
 
 ## Database
 

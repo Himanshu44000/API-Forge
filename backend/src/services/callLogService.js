@@ -13,7 +13,7 @@ export const logMockCall = async (mockApiId, callData) => {
     responseTimeMs,
   } = callData
 
-  await pool.query(
+  const result = await pool.query(
     `INSERT INTO call_logs (
       mock_api_id,
       request_method,
@@ -26,7 +26,8 @@ export const logMockCall = async (mockApiId, callData) => {
       response_body,
       response_time_ms,
       created_at
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CURRENT_TIMESTAMP)`,
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CURRENT_TIMESTAMP)
+    RETURNING id, mock_api_id, request_method, request_path, request_headers, request_body, request_query_params, response_status, response_headers, response_body, response_time_ms, created_at`,
     [
       mockApiId,
       requestMethod,
@@ -40,6 +41,8 @@ export const logMockCall = async (mockApiId, callData) => {
       responseTimeMs,
     ]
   )
+
+  return result.rows[0] || null
 }
 
 export const getCallLogs = async (mockApiId, limit = 50, offset = 0) => {

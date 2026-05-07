@@ -1,9 +1,10 @@
 import pool from '../db/pool.js'
+import { emitWebhookCall } from './socketService.js'
 
 const DEFAULT_WEBHOOK_TIMEOUT = 5000 // 5 seconds
 
 export const logWebhookCall = async (mockApiId, webhookUrl, requestPayload, success = false, responseStatus = null, responseBody = null, errorMessage = null) => {
-  await pool.query(
+  const { rows } = await pool.query(
     `
       INSERT INTO webhook_calls (
         mock_api_id,
@@ -14,9 +15,12 @@ export const logWebhookCall = async (mockApiId, webhookUrl, requestPayload, succ
         error_message,
         success
       ) VALUES ($1, $2, $3::jsonb, $4, $5, $6, $7)
+      RETURNING *
     `,
     [mockApiId, webhookUrl, JSON.stringify(requestPayload), responseStatus, responseBody, errorMessage, success],
   )
+  
+  return rows[0] || null
 }
 
 export const triggerWebhookAsync = (mockApiId, webhookUrls, requestPayload, responsePayload) => {
@@ -60,12 +64,18 @@ export const triggerWebhookAsync = (mockApiId, webhookUrls, requestPayload, resp
         const responseText = await response.text()
 
         console.log(`✅ Webhook success to ${webhookUrl}: Status ${response.status}`)
-        await logWebhookCall(mockApiId, webhookUrl, payload, response.ok, response.status, responseText, null)
+        const webhookCall = await logWebhookCall(mockApiId, webhookUrl, payload, response.ok, response.status, responseText, null)
+        if (webhookCall) {
+          emitWebhookCall(mockApiId, webhookCall)
+        }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error)
 
         console.error(`❌ Webhook failed to ${webhookUrl}: ${errorMessage}`)
-        await logWebhookCall(mockApiId, webhookUrl, payload, false, null, null, errorMessage)
+        const webhookCall = await logWebhookCall(mockApiId, webhookUrl, payload, false, null, null, errorMessage)
+        if (webhookCall) {
+          emitWebhookCall(mockApiId, webhookCall)
+        }
       }
     }
     

@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { getWebhookCalls, clearWebhookCalls } from '../services/mockApi.js'
+import { joinMockRoom, leaveMockRoom, onWebhookCallCreated, offWebhookCallCreated } from '../services/socketService.js'
 
 function WebhookCallsPanel({ mockId }) {
   const [calls, setCalls] = useState([])
@@ -22,12 +23,30 @@ function WebhookCallsPanel({ mockId }) {
     }
   }, [mockId, pagination.limit, pagination.offset])
 
+  // Handle new webhook call from real-time event
+  const handleNewWebhookCall = useCallback((webhookCall) => {
+    setCalls((prevCalls) => [webhookCall, ...prevCalls])
+  }, [])
+
+  // Load initial calls when mockId changes
   useEffect(() => {
     if (mockId) {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       loadCalls()
     }
-  }, [mockId, loadCalls])
+  }, [mockId])
+
+  // Subscribe to real-time webhook events - separate effect to avoid dependency loop
+  useEffect(() => {
+    if (mockId) {
+      joinMockRoom(mockId)
+      onWebhookCallCreated(handleNewWebhookCall)
+
+      return () => {
+        leaveMockRoom(mockId)
+        offWebhookCallCreated(handleNewWebhookCall)
+      }
+    }
+  }, [mockId, handleNewWebhookCall])
 
   const handleClear = async () => {
     if (!window.confirm('Delete all webhook call entries for this mock?')) return

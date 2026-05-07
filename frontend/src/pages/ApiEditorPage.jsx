@@ -17,6 +17,8 @@ const DEFAULT_FORM = {
   status_code: '200',
   delay: '0',
   error_rate: '0',
+  rate_limit_requests: '0',
+  rate_limit_window_ms: '60000',
   is_active: true,
 }
 
@@ -58,6 +60,8 @@ function ApiEditorPage({ mode }) {
             status_code: String(mockApi.status_code),
             delay: String(mockApi.delay),
             error_rate: String(mockApi.error_rate),
+            rate_limit_requests: String(mockApi.rate_limit_requests ?? 0),
+            rate_limit_window_ms: String(mockApi.rate_limit_window_ms ?? 60000),
             is_active: Boolean(mockApi.is_active),
           })
         }
@@ -214,6 +218,8 @@ function ApiEditorPage({ mode }) {
         status_code: Number(form.status_code),
         delay: Number(form.delay),
         error_rate: Number(form.error_rate),
+        rate_limit_requests: Number(form.rate_limit_requests),
+        rate_limit_window_ms: Number(form.rate_limit_window_ms),
         is_active: form.is_active,
       }
 
@@ -329,6 +335,26 @@ function ApiEditorPage({ mode }) {
           />
         </Field>
 
+        <Field label="Traffic limit" hint="Requests per window">
+          <input
+            className="w-full rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-teal-400/60"
+            type="number"
+            min="0"
+            value={form.rate_limit_requests}
+            onChange={(event) => setField('rate_limit_requests', event.target.value)}
+          />
+        </Field>
+
+        <Field label="Traffic window" hint="Milliseconds">
+          <input
+            className="w-full rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-teal-400/60"
+            type="number"
+            min="1000"
+            value={form.rate_limit_window_ms}
+            onChange={(event) => setField('rate_limit_window_ms', event.target.value)}
+          />
+        </Field>
+
         <Field label="Active status" hint="Enable or disable the endpoint">
           <button
             className={[
@@ -346,7 +372,7 @@ function ApiEditorPage({ mode }) {
       </div>
 
       <div className="mt-5">
-        <Field label="JSON Response" hint="Valid JSON required" error={jsonError}>
+        <Field label="JSON Response" hint="Valid JSON required. Use placeholders like {{request.body.name}} or {{now}}." error={jsonError}>
           <textarea
             className="min-h-[240px] w-full rounded-3xl border border-white/10 bg-slate-950/80 px-4 py-3 font-mono text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-teal-400/60"
             placeholder='{"name":"Aman"}'

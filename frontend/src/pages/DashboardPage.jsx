@@ -1,7 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import ApiTable from '../components/ApiTable.jsx'
+import Sparkline from '../components/Sparkline.jsx'
+import DashboardCharts from '../components/DashboardCharts.jsx'
 import { useMockApis } from '../hooks/useMockApis.js'
 import {
   buildMockUrl,
@@ -26,6 +28,39 @@ function DashboardPage() {
   const [isImporting, setIsImporting] = useState(false)
 
   const { apis, loading, error, refresh } = useMockApis({ search, method, active, sharing, category })
+
+  const [analytics, setAnalytics] = useState(null)
+  const [mockSeries, setMockSeries] = useState({})
+
+  useEffect(() => {
+    let mounted = true
+    const load = async () => {
+      try {
+        const overview = await import('../services/mockApi.js').then((m) => m.getAnalyticsOverview())
+        if (!mounted) return
+        setAnalytics(overview)
+
+        // fetch timeseries for top 3 mocks
+        const top = overview.topMocks || []
+        const toFetch = top.slice(0, 3)
+        const series = {}
+        await Promise.all(
+          toFetch.map(async (t) => {
+            const res = await import('../services/mockApi.js').then((m) => m.getMockTimeseries(t.id))
+            series[t.id] = res.data.map((r) => r.count)
+          })
+        )
+        if (mounted) setMockSeries(series)
+      } catch (err) {
+        // ignore analytics errors for now
+      }
+    }
+
+    load()
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   const stats = useMemo(() => {
     const total = apis.length
@@ -230,6 +265,8 @@ function DashboardPage() {
           </div>
         ))}
       </section>
+
+      {analytics ? <DashboardCharts analytics={analytics} mockSeries={mockSeries} /> : null}
 
       <section className="rounded-[2rem] border border-white/10 bg-white/5 p-5 shadow-glow backdrop-blur">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">

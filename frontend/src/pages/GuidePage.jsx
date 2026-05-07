@@ -90,8 +90,8 @@ Body: {"success": true, "token": "abc123xyz"}`}
         </Section>
 
         {/* ===== 3. Simulate Real-World Behavior ===== */}
-        <Section title="3. Simulate Real-World Behavior - Delays & Errors">
-          <p>Make your mocks behave like real APIs by adding latency and random failures.</p>
+        <Section title="3. Simulate Real-World Behavior - Delays, Errors & Traffic Limits">
+          <p>Make your mocks behave like real APIs by adding latency, random failures, and request caps.</p>
           <div className="mt-3 space-y-3">
             <div>
               <p className="font-semibold text-teal-300">Delay (milliseconds)</p>
@@ -107,12 +107,25 @@ Body: {"success": true, "token": "abc123xyz"}`}
                 Perfect for testing retry logic. Example: <span className="font-mono text-slate-200">30</span> = 30% chance of error
               </p>
             </div>
+            <div>
+              <p className="font-semibold text-teal-300">Traffic Limit</p>
+              <p className="text-xs text-slate-400">Fixed window rate limit per mock</p>
+              <p className="mt-1">
+                Example: <span className="font-mono text-slate-200">5 requests / 60000 ms</span> returns <span className="font-mono text-slate-200">429 Too Many Requests</span> after the 5th call within a minute.
+              </p>
+            </div>
           </div>
           <div className="mt-4 rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-slate-200">
             <p className="font-semibold text-amber-300">Use Case: Test Timeout Handling</p>
             <p className="mt-2">
               Set delay to 5000 ms (5 seconds). In your app, set HTTP timeout to 3 seconds. Your code should catch
               the timeout error gracefully.
+            </p>
+          </div>
+          <div className="mt-4 rounded-2xl border border-red-400/20 bg-red-400/10 p-4 text-sm text-slate-200">
+            <p className="font-semibold text-red-300">Use Case: Test Rate-Limit Handling</p>
+            <p className="mt-2">
+              Set the traffic limit to 3 requests per 60000 ms. Send 4 requests quickly. The first 3 should succeed and the 4th should return <span className="font-mono text-slate-200">429</span>.
             </p>
           </div>
         </Section>

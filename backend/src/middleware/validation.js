@@ -58,6 +58,14 @@ export const validateMockApiPayload = ({ partial = false } = {}) => (req, res, n
       payload.error_rate = parseIntegerInRange(body.error_rate ?? 0, 'Error rate', 0, 100)
     }
 
+    if (!partial || hasOwnProperty(body, 'rate_limit_requests')) {
+      payload.rate_limit_requests = parseIntegerInRange(body.rate_limit_requests ?? 0, 'Rate limit requests', 0, 1_000_000)
+    }
+
+    if (!partial || hasOwnProperty(body, 'rate_limit_window_ms')) {
+      payload.rate_limit_window_ms = parseIntegerInRange(body.rate_limit_window_ms ?? 60000, 'Rate limit window', 1000, 86_400_000)
+    }
+
     if (!partial || hasOwnProperty(body, 'response_headers')) {
       const headers = body.response_headers ?? {}
       let parsedHeaders

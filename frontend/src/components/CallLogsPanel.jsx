@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { getCallLogs, clearCallLogs } from '../services/mockApi.js'
+import { joinMockRoom, leaveMockRoom, onCallLogCreated, offCallLogCreated } from '../services/socketService.js'
 
 function CallLogsPanel({ mockId }) {
   const [logs, setLogs] = useState([])
@@ -24,12 +25,45 @@ function CallLogsPanel({ mockId }) {
     }
   }, [mockId, pagination.limit, pagination.offset])
 
+  const handleNewCallLog = useCallback((callLog) => {
+    setLogs((prevLogs) => [callLog, ...prevLogs])
+    setPagination((prevPagination) => ({
+      ...prevPagination,
+      total: (prevPagination.total || 0) + 1,
+    }))
+    setStats((prevStats) => {
+      if (!prevStats) {
+        return prevStats
+      }
+
+      return {
+        ...prevStats,
+        total_calls: Number(prevStats.total_calls || 0) + 1,
+        success_count: Number(prevStats.success_count || 0) + (Number(callLog.response_status) >= 200 && Number(callLog.response_status) < 400 ? 1 : 0),
+        error_count: Number(prevStats.error_count || 0) + (Number(callLog.response_status) >= 400 ? 1 : 0),
+      }
+    })
+  }, [])
+
+  // Load logs when the selected mock or page changes
   useEffect(() => {
     if (mockId) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       loadLogs()
     }
   }, [mockId, loadLogs])
+
+  // Subscribe to real-time events - separate effect to avoid dependency loop
+  useEffect(() => {
+    if (mockId) {
+      joinMockRoom(mockId)
+      onCallLogCreated(handleNewCallLog)
+
+      return () => {
+        leaveMockRoom(mockId)
+        offCallLogCreated(handleNewCallLog)
+      }
+    }
+  }, [mockId, handleNewCallLog])
 
   const handleClearLogs = async () => {
     if (!window.confirm('Are you sure? This will delete all call logs for this mock.')) {

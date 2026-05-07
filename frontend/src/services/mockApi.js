@@ -95,3 +95,13 @@ export const clearWebhookCalls = async (id) => {
   const response = await api.delete(`/api/mock/${id}/webhook-calls`)
   return response.data
 }
+
+export const getAnalyticsOverview = async () => {
+  const response = await api.get('/api/analytics/overview')
+  return response.data
+}
+
+export const getMockTimeseries = async (id, params = {}) => {
+  const response = await api.get(`/api/analytics/mocks/${id}/timeseries`, { params })
+  return response.data
+}

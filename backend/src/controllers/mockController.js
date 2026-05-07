@@ -15,6 +15,7 @@ import {
 } from '../services/mockService.js'
 import { triggerWebhookAsync, getWebhookCalls, clearWebhookCalls } from '../services/webhookService.js'
 import { logMockCall, getCallLogs, getCallLogsCount, clearCallLogs, getCallLogsStats } from '../services/callLogService.js'
+import { emitCallLog } from '../services/socketService.js'
 
 const sendMockApiResponse = (res, statusCode, payload) => {
   res.status(statusCode).json(payload)
@@ -97,7 +98,13 @@ export const dynamicMockHandler = asyncHandler(async (req, res) => {
       responseHeaders: result.headers || {},
       responseBody: result.body,
       responseTimeMs,
-    }).catch((err) => console.error('Failed to log mock call:', err))
+    })
+      .then((callLog) => {
+        if (callLog) {
+          emitCallLog(mockApi.id, callLog)
+        }
+      })
+      .catch((err) => console.error('Failed to log mock call:', err))
   })
 
   // Trigger webhooks asynchronously (non-blocking)
@@ -156,7 +163,13 @@ export const dynamicPublicMockHandler = asyncHandler(async (req, res) => {
       responseHeaders: result.headers || {},
       responseBody: result.body,
       responseTimeMs,
-    }).catch((err) => console.error('Failed to log mock call:', err))
+    })
+      .then((callLog) => {
+        if (callLog) {
+          emitCallLog(mockApi.id, callLog)
+        }
+      })
+      .catch((err) => console.error('Failed to log mock call:', err))
   })
 
   // Trigger webhooks asynchronously (non-blocking)

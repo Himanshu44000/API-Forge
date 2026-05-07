@@ -13,6 +13,8 @@ export const ensureSchema = async () => {
       status_code INTEGER NOT NULL,
       delay INTEGER NOT NULL DEFAULT 0 CHECK (delay >= 0),
       error_rate INTEGER NOT NULL DEFAULT 0 CHECK (error_rate >= 0 AND error_rate <= 100),
+      rate_limit_requests INTEGER NOT NULL DEFAULT 0 CHECK (rate_limit_requests >= 0),
+      rate_limit_window_ms INTEGER NOT NULL DEFAULT 60000 CHECK (rate_limit_window_ms > 0),
       is_active BOOLEAN NOT NULL DEFAULT TRUE,
       is_public BOOLEAN NOT NULL DEFAULT FALSE,
       share_token TEXT UNIQUE,
@@ -37,6 +39,12 @@ export const ensureSchema = async () => {
 
     ALTER TABLE mock_apis
       ADD COLUMN IF NOT EXISTS category TEXT NOT NULL DEFAULT '';
+
+    ALTER TABLE mock_apis
+      ADD COLUMN IF NOT EXISTS rate_limit_requests INTEGER NOT NULL DEFAULT 0;
+
+    ALTER TABLE mock_apis
+      ADD COLUMN IF NOT EXISTS rate_limit_window_ms INTEGER NOT NULL DEFAULT 60000;
 
     CREATE UNIQUE INDEX IF NOT EXISTS mock_apis_share_token_unique
       ON mock_apis (share_token)
