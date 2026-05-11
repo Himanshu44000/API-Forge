@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast'
 import Layout from './components/Layout.jsx'
 import ApiEditorPage from './pages/ApiEditorPage.jsx'
 import DashboardPage from './pages/DashboardPage.jsx'
+import WhyPage from './pages/WhyPage.jsx'
 import GuidePage from './pages/GuidePage.jsx'
 import TesterPage from './pages/TesterPage.jsx'
 
@@ -25,6 +26,7 @@ function App() {
         <Route element={<Layout />}>
           <Route index element={<Navigate replace to="/dashboard" />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/why" element={<WhyPage />} />
           <Route path="/guide" element={<GuidePage />} />
           <Route path="/apis/new" element={<ApiEditorPage mode="create" />} />
           <Route path="/apis/:id" element={<ApiEditorPage mode="edit" />} />

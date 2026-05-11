@@ -253,7 +253,7 @@ function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
         {[
           { label: 'Total APIs', value: stats.total },
           { label: 'Active APIs', value: stats.activeCount },
@@ -264,6 +264,16 @@ function DashboardPage() {
             <p className="mt-4 font-display text-3xl font-bold text-white">{card.value}</p>
           </div>
         ))}
+        <Link
+          className="group rounded-3xl border border-teal-400/20 bg-gradient-to-br from-teal-400/10 to-cyan-400/10 p-5 shadow-glow transition hover:border-teal-400/40 hover:from-teal-400/15 hover:to-cyan-400/15 flex flex-col justify-between"
+          to="/why"
+        >
+          <div>
+            <p className="text-xs uppercase tracking-[0.28em] text-teal-400/70 group-hover:text-teal-300">Learn</p>
+            <p className="mt-4 font-display text-lg font-bold text-teal-200 group-hover:text-teal-100">Why API Forge?</p>
+          </div>
+          <p className="mt-3 text-xs text-teal-100/60">Discover use cases and benefits →</p>
+        </Link>
       </section>
 
       {analytics ? <DashboardCharts analytics={analytics} mockSeries={mockSeries} /> : null}
