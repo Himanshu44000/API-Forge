@@ -312,7 +312,7 @@ function DashboardPage() {
           </div>
         </div>
 
-        <div className="mt-6 grid gap-3 lg:grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr]">
+        <div className="mt-6 grid gap-3 lg:grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_0.7fr]">
           <input
             className="rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-teal-400/60"
             placeholder="Search by endpoint, method, or response"

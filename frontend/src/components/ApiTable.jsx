@@ -7,6 +7,11 @@ const methodStyles = {
   DELETE: 'bg-rose-400/15 text-rose-300 ring-1 ring-rose-400/25',
 }
 
+const buttonClasses = 'rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-100 transition hover:bg-white/10 flex-1'
+const buttonTealClasses = 'rounded-lg border border-teal-400/20 bg-teal-400/10 px-3 py-2 text-xs font-semibold text-teal-200 transition hover:bg-teal-400/20 flex-1'
+const buttonCyanClasses = 'rounded-lg border border-cyan-400/20 bg-cyan-400/10 px-3 py-2 text-xs font-semibold text-cyan-200 transition hover:bg-cyan-400/20 flex-1'
+const buttonRoseClasses = 'rounded-lg border border-rose-400/20 bg-rose-400/10 px-3 py-2 text-xs font-semibold text-rose-200 transition hover:bg-rose-400/20 flex-1'
+
 function ApiTable({
   apis,
   loading,
@@ -70,9 +75,22 @@ function ApiTable({
                 <p className="mt-2 inline-block rounded-full bg-white/5 px-2 py-1 text-[11px] font-semibold text-slate-300">{api.category}</p>
               ) : null}
               {api.public_url ? (
-                <p className="mt-1 break-all font-mono text-[11px] text-teal-300">
-                  Public: {api.public_url}
-                </p>
+                <div className="mt-1 flex items-center gap-2">
+                  <p className="break-all font-mono text-[11px] text-teal-300">
+                    {api.public_url}
+                  </p>
+                  <button
+                    onClick={() => onCopyPublicUrl(api)}
+                    className="inline-flex items-center justify-center rounded-md border border-teal-400/20 bg-teal-400/10 p-1.5 transition hover:bg-teal-400/20"
+                    title="Copy public URL"
+                    type="button"
+                  >
+                    <svg className="h-4 w-4 text-teal-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h8a2 2 0 012 2v10a2 2 0 01-2 2H8a2 2 0 01-2-2V9a2 2 0 012-2z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16 5V4a2 2 0 00-2-2H6a2 2 0 00-2 2v9a2 2 0 002 2h1" />
+                    </svg>
+                  </button>
+                </div>
               ) : null}
             </div>
 
@@ -97,68 +115,86 @@ function ApiTable({
               </span>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              <button
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-100 transition hover:bg-white/10"
-                type="button"
-                onClick={() => onCopyUrl(api)}
-              >
-                Copy URL
-              </button>
-              {api.is_public ? (
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
                 <button
-                  className="rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-xs font-semibold text-teal-200 transition hover:bg-teal-400/20"
+                  className={buttonClasses}
                   type="button"
-                  onClick={() => onCopyPublicUrl(api)}
+                  onClick={() => onCopyUrl(api)}
+                  title="Copy mock URL"
                 >
-                  Copy Public
+                  Copy URL
                 </button>
-              ) : null}
-              <button
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-100 transition hover:bg-white/10"
-                type="button"
-                onClick={() => onToggle(api)}
-              >
-                Toggle
-              </button>
-              {api.is_public ? (
                 <button
-                  className="rounded-full border border-amber-400/20 bg-amber-400/10 px-3 py-1.5 text-xs font-semibold text-amber-200 transition hover:bg-amber-400/20"
+                  className={buttonClasses}
                   type="button"
-                  onClick={() => onRevokeShare(api)}
+                  onClick={() => onEdit(api)}
+                  title="Edit mock API"
                 >
-                  Revoke Public
+                  Edit
                 </button>
-              ) : (
+              </div>
+
+              <div className="flex gap-2">
                 <button
-                  className="rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-xs font-semibold text-teal-200 transition hover:bg-teal-400/20"
+                  className={buttonClasses}
                   type="button"
-                  onClick={() => onShare(api)}
+                  onClick={() => onToggle(api)}
+                  title={api.is_active ? 'Disable mock API' : 'Enable mock API'}
                 >
-                  Make Public
+                  {api.is_active ? 'Disable' : 'Enable'}
                 </button>
-              )}
-              <button
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-100 transition hover:bg-white/10"
-                type="button"
-                onClick={() => onDuplicate(api)}
-              >
-                Duplicate
-              </button>
-              <button
-                className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-200 transition hover:bg-cyan-400/20"
-                type="button"
-                onClick={() => onEdit(api)}
-              >
-                Edit
-              </button>
-              <button
-                className="rounded-full border border-rose-400/20 bg-rose-400/10 px-3 py-1.5 text-xs font-semibold text-rose-200 transition hover:bg-rose-400/20"
-                type="button"
-                onClick={() => onDelete(api)}
-              >
-                Delete
-              </button>
+                <button
+                  className={buttonClasses}
+                  type="button"
+                  onClick={() => onDuplicate(api)}
+                  title="Duplicate mock API"
+                >
+                  Duplicate
+                </button>
+              </div>
+
+              <div className="flex gap-2">
+                {api.is_public ? (
+                  <>
+                    <button
+                      className={buttonTealClasses}
+                      type="button"
+                      onClick={() => onRevokeShare(api)}
+                      title="Revoke public access"
+                    >
+                      Revoke Public
+                    </button>
+                    <button
+                      className={buttonRoseClasses}
+                      type="button"
+                      onClick={() => onDelete(api)}
+                      title="Delete mock API"
+                    >
+                      Delete
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      className={buttonTealClasses}
+                      type="button"
+                      onClick={() => onShare(api)}
+                      title="Make mock API public"
+                    >
+                      Make Public
+                    </button>
+                    <button
+                      className={buttonRoseClasses}
+                      type="button"
+                      onClick={() => onDelete(api)}
+                      title="Delete mock API"
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         ))}

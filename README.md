@@ -300,4 +300,8 @@ This means:
 
 ---
 
+<<<<<<< HEAD
 **Happy mocking! 🎉**
+=======
+**Happy mocking! 🎉**
+>>>>>>> 7d45c91 (Refine navbar layout and dashboard actions)
