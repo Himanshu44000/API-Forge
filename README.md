@@ -2,7 +2,7 @@
 
 A powerful full-stack mock API server for developers and QA teams. Create, simulate, and test HTTP endpoints with realistic latency, failures, response templates, and real-time analytics—all without writing a single line of backend code.
 
-**Live Demo:** [api-forge.vercel.app](https://api-forge-drab.vercel.app/dashboard)
+**Live Demo:** [https://api-forge-drab.vercel.app/]
 
 ---
 
